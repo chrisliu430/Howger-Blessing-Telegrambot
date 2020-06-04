@@ -46,51 +46,40 @@ func main() {
 }
 
 func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
-	startText := "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
+	var result map[string]string
 	for update := range updates {
-		googleAnalytics()
+		callGoogleAnalytics()
+		msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, "")
 		if update.Message == nil {
 			continue
 		}
 		switch update.Message.Text {
 		case "/start":
-			msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, startText)
+			msg.Text = "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
 			bot.Send(msg)
 		default:
-			requestForm := url.Values{
-				"text": {update.Message.Text},
-			}
-			resp, err := http.PostForm("http://howfun.macs1207.info/api/video", requestForm)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer resp.Body.Close()
-			var result map[string]string
-			json.NewDecoder(resp.Body).Decode(&result)
-			if err != nil {
-				log.Fatal(err)
-			}
+			cralwerToGetVideo(update.Message.Text, result)
 			log.Println(result)
 			if result["error"] != "" {
-				msg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID,
-					"http://howfun.macs1207.info/video?v=5oiR5rKS5b-16YCZ5YCL5a2X5ZOm")
+				msg.Text = "Howger沒念這個字哦"
 				bot.Send(msg)
 			} else {
 				videoURL := "http://howfun.macs1207.info/video?v=" + result["video_id"]
-				msg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID, videoURL)
+				msg.Text = "這個影片的網址\n" + videoURL
+				videoMsg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID, videoURL)
 				bot.Send(msg)
+				bot.Send(videoMsg)
 			}
 		}
 	}
-	return
 }
 
-func googleAnalytics() {
+func callGoogleAnalytics() {
 	log.Println("Analysis")
 	analyticURL := "https://www.google-analytics.com/collect"
 	requestForm := url.Values{
 		"v":   {"1"},
-		"tid": {"UA-168546559-1"},
+		"tid": {os.Getenv("TID")},
 		"t":   {"event"},
 		"ec":  {"Howger"},
 		"ea":  {"Blessing"},
@@ -99,7 +88,23 @@ func googleAnalytics() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(resp.StatusCode)
 	defer resp.Body.Close()
-	return
+	log.Println(resp.StatusCode)
+}
+
+func cralwerToGetVideo(text string, result map[string]string) map[string]string {
+	requestForm := url.Values{
+		"text": {text},
+	}
+	resp, err := http.PostForm("http://howfun.macs1207.info/api/video", requestForm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(result)
+	return result
 }
