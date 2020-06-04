@@ -96,6 +96,6 @@ func googleAnalytics() {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
-	log.Panicln(resp.Body)
+	log.Println(resp.Body)
 	return
 }
