@@ -71,7 +71,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 				log.Fatal(err)
 			}
 			log.Println(result)
-			if result == nil {
+			if result["error"] != "" {
 				msg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID,
 					"http://howfun.macs1207.info/video?v=5oiR5rKS5b-16YCZ5YCL5a2X5ZOm")
 				bot.Send(msg)
