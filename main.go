@@ -43,11 +43,11 @@ func main() {
 	updates = bot.ListenForWebhook("/")
 	// ---
 	go http.ListenAndServe(addr, nil)
+	googleAnalytics()
 	botResponse(bot, updates)
 }
 
 func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
-	googleAnalytics()
 	for update := range updates {
 		if update.Message == nil {
 			continue
