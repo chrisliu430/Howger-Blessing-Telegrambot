@@ -46,6 +46,7 @@ func main() {
 }
 
 func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
+	startText := "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
 	for update := range updates {
 		googleAnalytics()
 		if update.Message == nil {
@@ -53,12 +54,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 		}
 		switch update.Message.Text {
 		case "/start":
-			msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, "
-			直接輸入文字即可，目前無提供命令服務
-			若有想建議的服務
-				可以寄信至heranchris0430@gmail.com或至github上提出issue
-			How哥並無唸英文，所以可以打相似的音來讓HOW哥念:)
-			")
+			msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, startText)
 			bot.Send(msg)
 		default:
 			requestForm := url.Values{
