@@ -73,7 +73,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 			log.Println(result)
 			if result == nil {
 				msg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID,
-					"http://howfun.macs1207.info/video?v=1a9e30d6-6ddd-49d8-8d15-88d4a4f9d347")
+					"http://howfun.macs1207.info/video?v=5oiR5rKS5b-16YCZ5YCL5a2X5ZOm")
 				bot.Send(msg)
 			} else {
 				videoURL := "http://howfun.macs1207.info/video?v=" + result["video_id"]
