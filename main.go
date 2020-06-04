@@ -46,7 +46,6 @@ func main() {
 }
 
 func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
-	var result map[string]string
 	for update := range updates {
 		callGoogleAnalytics()
 		msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, "")
@@ -58,7 +57,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 			msg.Text = "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
 			bot.Send(msg)
 		default:
-			result = cralwerToGetVideo(update.Message.Text, result)
+			result = cralwerToGetVideo(update.Message.Text)
 			log.Println(result)
 			if result["error"] != "" {
 				msg.Text = "Howger沒念這個字哦"
@@ -70,6 +69,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 				bot.Send(msg)
 				bot.Send(videoMsg)
 			}
+			result = { "": ""}
 		}
 	}
 }
@@ -92,7 +92,8 @@ func callGoogleAnalytics() {
 	log.Println(resp.StatusCode)
 }
 
-func cralwerToGetVideo(text string, result map[string]string) map[string]string {
+func cralwerToGetVideo(text string) map[string]string {
+	var result map[string]string
 	requestForm := url.Values{
 		"text": {text},
 	}
