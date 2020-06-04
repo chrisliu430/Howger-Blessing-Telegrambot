@@ -42,33 +42,47 @@ func main() {
 	updates = bot.ListenForWebhook("/")
 	// ---
 	go http.ListenAndServe(addr, nil)
-	botResponse(bot, updates)
+	botProcessMessage(bot, updates)
 }
 
-func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
+func botReponseMessage(bot *TelegramBotAPI.BotAPI, text string, chatID int64) {
+	msg := TelegramBotAPI.NewMessage(chatID, "")
+	result := cralwerToGetVideo(text)
+	log.Println(result)
+	if result["error"] != "" {
+		msg.Text = "Howger沒念這個字哦"
+		bot.Send(msg)
+	} else {
+		videoURL := "http://howfun.macs1207.info/video?v=" + result["video_id"]
+		msg.Text = "這個影片的網址\n" + videoURL
+		videoMsg := TelegramBotAPI.NewVideoShare(chatID, videoURL)
+		bot.Send(videoMsg)
+	}
+}
+
+func botProcessMessage(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
 	for update := range updates {
 		callGoogleAnalytics()
 		msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, "")
 		if update.Message == nil {
 			continue
 		}
-		switch update.Message.Text {
-		case "/start":
-			msg.Text = "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
-			bot.Send(msg)
+		switch update.Message.Command() {
+		case "start":
+			msg.Text = "直接輸入文字即會傳送影片給你\n若僅需要聲音請使用/voice [文字]來取得\n/help 可以查看命令\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
+		case "help":
+			msg.Text = "--- Help List ---\n/start 可以查看如何使用\n/feedback 可以填寫建議(未完成)\n/voice [文字] 可以取得需要的音訊(未完成)\n/info 提供作者群、作者聯繫信箱及開源連結"
+		case "info":
+			msg.Text = "作者: C.H(https://github.com/chrisliu430)\n信箱: heranchris0430@gmail.com\n開源連結: https://github.com/chrisliu430/Howger-Blessing-Telegrambot"
 		default:
-			result := cralwerToGetVideo(update.Message.Text)
-			log.Println(result)
-			if result["error"] != "" {
-				msg.Text = "Howger沒念這個字哦"
-				bot.Send(msg)
+			if update.Message == nil {
+				continue
 			} else {
-				videoURL := "http://howfun.macs1207.info/video?v=" + result["video_id"]
-				msg.Text = "這個影片的網址\n" + videoURL
-				videoMsg := TelegramBotAPI.NewVideoShare(update.Message.Chat.ID, videoURL)
-				bot.Send(msg)
-				bot.Send(videoMsg)
+				botReponseMessage(bot, update.Message.Text, update.Message.Chat.ID)
 			}
+		}
+		if msg.Text != "" {
+			bot.Send(msg)
 		}
 	}
 }
