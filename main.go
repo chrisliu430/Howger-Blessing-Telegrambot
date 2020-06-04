@@ -9,7 +9,6 @@ import (
 	"os"
 
 	TelegramBotAPI "github.com/go-telegram-bot-api/telegram-bot-api"
-	UUID "github.com/gofrs/uuid"
 )
 
 func main() {
@@ -91,10 +90,9 @@ func googleAnalytics() {
 	requestForm := url.Values{
 		"v":   {"1"},
 		"tid": {"UA-168546559-1"},
-		"cid": {UUID.Must(UUID.NewV4()).String()},
 		"t":   {"event"},
-		"ec":  {"Example"},
-		"ea":  {"Howger"},
+		"ec":  {"Howger"},
+		"ea":  {"Blessing"},
 	}
 	resp, err := http.PostForm(analyticURL, requestForm)
 	if err != nil {
