@@ -86,6 +86,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 }
 
 func googleAnalytics() {
+	log.Println("Analysis")
 	analyticURL := "https://www.google-analytics.com/collect"
 	requestForm := url.Values{
 		"v":   {"1"},
