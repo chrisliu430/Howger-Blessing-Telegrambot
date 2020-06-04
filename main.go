@@ -46,6 +46,7 @@ func main() {
 }
 
 func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
+	googleAnalytics()
 	for update := range updates {
 		if update.Message == nil {
 			continue
@@ -80,5 +81,20 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 			}
 		}
 	}
+	return
+}
+
+func googleAnalytics() {
+	analyticURL := "https://www.google-analytics.com/collect"
+	requestForm := url.Values{
+		"v":   {"1"},
+		"t":   {"event"},
+		"tid": {"UA-168546559-1"},
+	}
+	resp, err := http.PostForm(analyticURL, requestForm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
 	return
 }
