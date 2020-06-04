@@ -93,14 +93,14 @@ func googleAnalytics() {
 		"tid": {"UA-168546559-1"},
 		"cid": {UUID.Must(UUID.NewV4()).String()},
 		"t":   {"event"},
-		"ec":  {"UserUsing"},
+		"ec":  {"Example"},
 		"ea":  {"Howger"},
 	}
 	resp, err := http.PostForm(analyticURL, requestForm)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(resp.Body)
+	log.Println(resp.StatusCode)
 	defer resp.Body.Close()
 	return
 }
