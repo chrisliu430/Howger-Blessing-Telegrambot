@@ -58,7 +58,7 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 			msg.Text = "直接輸入文字即可\n若有想建議的服務\n可以寄信至heranchris0430@gmail.com或至github上提出issue\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
 			bot.Send(msg)
 		default:
-			cralwerToGetVideo(update.Message.Text, result)
+			result = cralwerToGetVideo(update.Message.Text, result)
 			log.Println(result)
 			if result["error"] != "" {
 				msg.Text = "Howger沒念這個字哦"
