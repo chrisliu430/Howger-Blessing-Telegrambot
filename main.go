@@ -69,7 +69,6 @@ func botResponse(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChann
 				bot.Send(msg)
 				bot.Send(videoMsg)
 			}
-			result = { "": ""}
 		}
 	}
 }
