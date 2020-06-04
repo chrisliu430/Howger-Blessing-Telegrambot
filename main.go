@@ -96,5 +96,6 @@ func googleAnalytics() {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
+	log.Panicln(resp.Body)
 	return
 }
