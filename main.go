@@ -95,7 +95,7 @@ func googleAnalytics() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
 	log.Println(resp.Body)
+	defer resp.Body.Close()
 	return
 }
