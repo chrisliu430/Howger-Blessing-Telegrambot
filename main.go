@@ -111,7 +111,7 @@ func cralwerToGetVideo(text string, format string) map[string]string {
 		"text":   {text},
 		"format": {format},
 	}
-	resp, err := http.PostForm("http://howfun.macs1207.info/api/video", requestForm)
+	resp, err := http.PostForm("http://howfun.macs1207.info/api/media", requestForm)
 	if err != nil {
 		log.Fatal(err)
 	}
