@@ -47,7 +47,7 @@ func main() {
 
 func botReponseMessage(bot *TelegramBotAPI.BotAPI, text string, chatID int64) {
 	msg := TelegramBotAPI.NewMessage(chatID, "")
-	result := cralwerToGetVideo(text)
+	result := cralwerToGetVideo(text, "mp4")
 	log.Println(result)
 	if result["error"] != "" {
 		msg.Text = "Howger沒念這個字哦"
@@ -105,10 +105,11 @@ func callGoogleAnalytics() {
 	log.Println(resp.StatusCode)
 }
 
-func cralwerToGetVideo(text string) map[string]string {
+func cralwerToGetVideo(text string, format string) map[string]string {
 	var result map[string]string
 	requestForm := url.Values{
-		"text": {text},
+		"text":   {text},
+		"format": {format},
 	}
 	resp, err := http.PostForm("http://howfun.macs1207.info/api/video", requestForm)
 	if err != nil {
