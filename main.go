@@ -53,7 +53,7 @@ func botReponseMessage(bot *TelegramBotAPI.BotAPI, text string, chatID int64) {
 		msg.Text = "Howger沒念這個字哦"
 		bot.Send(msg)
 	} else {
-		videoURL := "http://howfun.macs1207.info/video?v=" + result["video_id"]
+		videoURL := "http://howfun.macs1207.info/video?v=" + result["media_id"]
 		msg.Text = "這個影片的網址\n" + videoURL
 		videoMsg := TelegramBotAPI.NewVideoShare(chatID, videoURL)
 		bot.Send(videoMsg)
