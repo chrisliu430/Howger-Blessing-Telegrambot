@@ -15,6 +15,7 @@ func main() {
 	// --- Variable
 	var err error
 	var botToken string
+	var format string
 	var bot *TelegramBotAPI.BotAPI
 	var updates TelegramBotAPI.UpdatesChannel
 	// --- Bot API Setting
@@ -22,6 +23,7 @@ func main() {
 	url := os.Getenv("URL")
 	botToken = os.Getenv("Token")
 	addr := fmt.Sprintf(":%s", port)
+	format = "mp4"
 	bot, err = TelegramBotAPI.NewBotAPI(botToken)
 	if err != nil {
 		log.Panic(err)
@@ -42,25 +44,28 @@ func main() {
 	updates = bot.ListenForWebhook("/")
 	// ---
 	go http.ListenAndServe(addr, nil)
-	botProcessMessage(bot, updates)
+	botProcessMessage(bot, updates, format)
 }
 
-func botReponseMessage(bot *TelegramBotAPI.BotAPI, text string, chatID int64) {
+func botReponseMessage(bot *TelegramBotAPI.BotAPI, text string, chatID int64, format string) {
 	msg := TelegramBotAPI.NewMessage(chatID, "")
-	result := cralwerToGetVideo(text, "mp4")
+	result := cralwerToGetVideo(text, format)
 	log.Println(result)
 	if result["error"] != "" {
 		msg.Text = "Howger沒念這個字哦"
 		bot.Send(msg)
-	} else {
+	} else if format == "mp4" {
 		videoURL := "http://howfun.macs1207.info/video?v=" + result["media_id"]
-		msg.Text = "這個影片的網址\n" + videoURL
 		videoMsg := TelegramBotAPI.NewVideoShare(chatID, videoURL)
 		bot.Send(videoMsg)
+	} else if format == "mp3" {
+		audioURL := "http://howfun.macs1207.info/audio?a=" + result["media_id"]
+		audioMsg := TelegramBotAPI.NewAudioShare(chatID, audioURL)
+		bot.Send(audioMsg)
 	}
 }
 
-func botProcessMessage(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel) {
+func botProcessMessage(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.UpdatesChannel, format string) {
 	for update := range updates {
 		callGoogleAnalytics()
 		msg := TelegramBotAPI.NewMessage(update.Message.Chat.ID, "")
@@ -71,14 +76,18 @@ func botProcessMessage(bot *TelegramBotAPI.BotAPI, updates TelegramBotAPI.Update
 		case "start":
 			msg.Text = "直接輸入文字即會傳送影片給你\n若僅需要聲音請使用/voice [文字]來取得\n/help 可以查看命令\nHow哥並無唸英文，所以可以打相似的音來讓HOW哥念:)"
 		case "help":
-			msg.Text = "--- Help List ---\n/start 可以查看如何使用\n/feedback 可以填寫建議(未完成)\n/voice [文字] 可以取得需要的音訊(未完成)\n/info 提供作者群、作者聯繫信箱及開源連結"
+			msg.Text = "--- Help List ---\n/start 可以查看如何使用\n/feedback 可以填寫建議(未完成)\n/audio 變更檔案格式為音訊檔\n/video 變更檔案格式為影片檔\n/info 提供作者群、作者聯繫信箱及開源連結"
 		case "info":
 			msg.Text = "作者: C.H(https://github.com/chrisliu430)\n信箱: heranchris0430@gmail.com\n開源連結: https://github.com/chrisliu430/Howger-Blessing-Telegrambot"
+		case "audio":
+			format = "mp3"
+		case "video":
+			format = "mp4"
 		default:
 			if update.Message == nil {
 				continue
 			} else {
-				botReponseMessage(bot, update.Message.Text, update.Message.Chat.ID)
+				botReponseMessage(bot, update.Message.Text, update.Message.Chat.ID, format)
 			}
 		}
 		if msg.Text != "" {
